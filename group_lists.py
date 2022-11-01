@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from enum import unique
+from itertools import count
 import tkinter as tk
-from tkinter import messagebox
 from tkinter import filedialog as fd
 import pandas as pd
 import os
 
 def choose_file():
     file_path_list = fd.askopenfilenames(title='Choose files', initialdir=os.getcwd())
+    file_path_list = list(file_path_list)
+    file_path_list.sort()
     file_path_list = '|'.join(file_path_list)
     input_entry.insert('0', file_path_list)
     # return list(file_path_list)
@@ -48,8 +49,9 @@ def save_file(df, output_dir):
     for new_file in new_file_list:
         df_temp = df[df['FILE_NAME']==new_file]
         df_temp = df_temp.drop('FILE_NAME', axis=1)
-        number_of_rows = len(df_temp)
-        df_temp.to_excel(f'{output_dir}/{new_file}_rows{number_of_rows}.xlsx', index=False)
+        df_temp.to_excel(f'{output_dir}/{new_file}.xlsx', index=False)
+    number_of_file = df.groupby(['FILE_NAME'])['FILE_NAME'].count()
+    number_of_file.to_excel(f'{output_dir}/NumberOfFile.xlsx')
 
 def main():
     file_path_list = input_entry.get()
